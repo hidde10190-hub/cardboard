@@ -77,40 +77,49 @@ public class CardboardMod implements ModInitializer {
     public static String paperVersion = "";
 
     @Override
-    public void onInitialize() {
-		FabricLoader loader = FabricLoader.getInstance();
-        Optional<ModContainer> omcc = loader.getModContainer("minecraft");
-        String mc = "";
+public void onInitialize() {
+    FabricLoader loader = FabricLoader.getInstance();
+    Optional<ModContainer> omcc = loader.getModContainer("minecraft");
+    String mc = "";
 
-        if (omcc.isPresent()) {
-            ModContainer mcc = omcc.get();
-            String mcver = mcc.getMetadata().getVersion().getFriendlyString();
-            mc = "- Minecraft " + mcver;
-        }
-
-        new File("plugins").mkdirs();
-
-	/*
-        int r = EventRegistery.registerAll(this);
-
-        paperVersion = LibraryManager.INSTANCE.getPaperVersion();
-        String details = " - Paper-API " + paperVersion + ". " + "Registered '" + r + "' iCommon events.";
-
-        // Check for FabricBetterConsole
-        if (CardboardConfig.isBetterConsole()) {
-            Component message = Component.literal("Cardboard " + mc)
-                    .withStyle(ChatFormatting.GOLD).append(details);
-            LOGGER.info(message.getString());
-        } else {
-
-            LOGGER.info("Cardboard " + mc + details);
-        }
-
-        CardboardEventManager.INSTANCE.callCardboardEvents();
-		*/
-    	
-    	System.out.println("Cardboard " + mc + " Initialized!");
+    if (omcc.isPresent()) {
+        ModContainer mcc = omcc.get();
+        String mcver = mcc.getMetadata().getVersion().getFriendlyString();
+        mc = "- Minecraft " + mcver;
     }
+
+    // Always ensure plugins folder exists
+    File pluginsDir = new File("plugins");
+    if (!pluginsDir.exists()) {
+        pluginsDir.mkdirs();
+    }
+
+    // Initialize Bukkit plugin manager and load plugins
+    this.pluginManager = new SimplePluginManager(Bukkit.getServer(), Bukkit.getCommandMap());
+    pluginManager.loadPlugins(pluginsDir);
+    pluginManager.enablePlugins(PluginLoadOrder.STARTUP);
+    System.out.println("[Cardboard] Plugins loaded and enabled.");
+
+    /*
+    int r = EventRegistery.registerAll(this);
+
+    paperVersion = LibraryManager.INSTANCE.getPaperVersion();
+    String details = " - Paper-API " + paperVersion + ". " + "Registered '" + r + "' iCommon events.";
+
+    // Check for FabricBetterConsole
+    if (CardboardConfig.isBetterConsole()) {
+        Component message = Component.literal("Cardboard " + mc)
+                .withStyle(ChatFormatting.GOLD).append(details);
+        LOGGER.info(message.getString());
+    } else {
+        LOGGER.info("Cardboard " + mc + details);
+    }
+
+    CardboardEventManager.INSTANCE.callCardboardEvents();
+    */
+
+    System.out.println("Cardboard " + mc + " Initialized!");
+}
 
 
 /*
